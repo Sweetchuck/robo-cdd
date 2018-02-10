@@ -1,0 +1,52 @@
+{
+    "name": "sweetchuck/robo-cdd",
+    "description": "Robo task wrapper for the Circular Dependency Detector",
+    "license": "GPL-3.0-or-later",
+    "config": {
+        "bin-dir": "bin",
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=7.1",
+        "consolidation/robo": "^1.0",
+        "sweetchuck/cdd": "^0.0"
+    },
+    "require-dev": {
+        "codeception/codeception": "^2.3",
+        "danielstjules/stringy": "^3.0",
+        "phpmetrics/phpmetrics": "^2.4",
+        "squizlabs/php_codesniffer": "^3.3",
+        "sweetchuck/codeception-module-robo-task-runner": "^0.0",
+        "sweetchuck/git-hooks": "^0.0",
+        "sweetchuck/robo-git": "^0.0",
+        "sweetchuck/robo-phpcs": "^0.0",
+        "sweetchuck/robo-phpmd": "^0.0",
+        "symfony/finder": "^3.2 || ^4.0",
+        "webmozart/path-util": "^2.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Sweetchuck\\Robo\\cdd\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Sweetchuck\\Robo\\cdd\\Composer\\": "src-dev/Composer/",
+            "Sweetchuck\\Robo\\cdd\\Test\\Helper\\": "tests/_support/Helper/",
+            "Sweetchuck\\Robo\\cdd\\Tests\\Acceptance\\": "tests/acceptance/",
+            "Sweetchuck\\Robo\\cdd\\Tests\\Unit\\": "tests/unit/"
+        }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "\\Sweetchuck\\Robo\\cdd\\Composer\\Scripts::postInstallCmd"
+        ],
+        "post-update-cmd": [
+            "\\Sweetchuck\\Robo\\cdd\\Composer\\Scripts::postUpdateCmd"
+        ]
+    }
+}

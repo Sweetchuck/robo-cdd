@@ -1,0 +1,6 @@
+
+class_name: UnitTester
+modules:
+    enabled:
+        - Asserts
+        - \Sweetchuck\Robo\cdd\Test\Helper\Unit
