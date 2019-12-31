@@ -116,26 +116,22 @@ class CircularDependencyDetectorTask extends RoboBaseTask
     /**
      * @return $this
      */
-    public function setOptions(array $option)
+    public function setOptions(array $options)
     {
-        foreach ($option as $name => $value) {
-            switch ($name) {
-                case 'assetNamePrefix':
-                    $this->setAssetNamePrefix($value);
-                    break;
+        if (array_key_exists('assetNamePrefix', $options)) {
+            $this->setAssetNamePrefix($options['assetNamePrefix']);
+        }
 
-                case 'items':
-                    $this->setItems($value);
-                    break;
+        if (array_key_exists('items', $options)) {
+            $this->setItems($options['items']);
+        }
 
-                case 'itemLabel':
-                    $this->setItemLabel($value);
-                    break;
+        if (array_key_exists('itemLabel', $options)) {
+            $this->setItemLabel($options['itemLabel']);
+        }
 
-                case 'haltOnError':
-                    $this->setHaltOnError($value);
-                    break;
-            }
+        if (array_key_exists('haltOnError', $options)) {
+            $this->setHaltOnError($options['haltOnError']);
         }
 
         return $this;

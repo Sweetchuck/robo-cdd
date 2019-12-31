@@ -285,7 +285,7 @@ class RoboFile extends Tasks
         $withCoverageXml = in_array($this->environmentType, ['ci']);
 
         $withUnitReportHtml = in_array($this->environmentType, ['dev']);
-        $withUnitReportXml = in_array($this->environmentType, ['dev']);
+        $withUnitReportXml = in_array($this->environmentType, ['ci']);
 
         $logDir = $this->getLogDir();
 
