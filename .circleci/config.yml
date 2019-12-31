@@ -1,117 +1,154 @@
 
-version: 2
+version: 2.1
 
-_custom:
-    step__run__install_php_extensions: &step__run__install_php_extensions
-        name: 'Install PHP extensions'
-        command: |
-            sudo apt-get -y install zlib1g-dev
-            sudo docker-php-ext-install zip
-    step__run__install_composer: &step__run__install_composer
-        name: 'Install composer'
-        command: |
-            cd /tmp
-            EXPECTED_SIGNATURE=$(curl -q https://composer.github.io/installer.sig)
-            php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-            ACTUAL_SIGNATURE=$(php -r "echo hash_file('SHA384', 'composer-setup.php');")
+.env_composer: &env_composer
+    COMPOSER_NO_INTERACTION: '1'
+    COMPOSER_MEMORY_LIMIT: '-1'
+    COMPOSER_DISABLE_XDEBUG_WARN: '1'
 
-            if [ "$EXPECTED_SIGNATURE" != "$ACTUAL_SIGNATURE" ]
-            then
-                >&2 echo 'ERROR: Invalid installer signature'
-                rm composer-setup.php
+orbs:
+    codecov: codecov/codecov@1.0.5
 
-                exit 1
-            fi
+executors:
+    php704:
+        environment:
+            <<: *env_composer
 
-            sudo php composer-setup.php --quiet --install-dir /usr/local/bin --filename composer
-            RESULT=$?
-            rm composer-setup.php
+        docker:
+            -
+                name: 'main'
+                image: 'circleci/php:7.4'
 
-            exit $RESULT
-    step__restore_cache: &step__restore_cache
-        name: 'Cache restore - "./vendor"'
-        keys:
-            - 'v1-dependencies-{{ checksum "composer.lock" }}'
-            - 'v1-dependencies-'
-    step__run__composer_install: &step__run__composer_install
-        name: 'Build'
-        command: 'composer install --no-interaction'
-    step__save_cache: &step__save_cache
-        name: 'Cache save - "./vendor"'
-        paths:
-            - './vendor'
-        key: 'v1-dependencies-{{ checksum "composer.lock" }}'
-    step__run__linters: &step__run__linters
-        name: 'Run linters'
-        command: 'bin/robo lint'
-    step__run__codeception_unit: &step__run__codeception_unit
-        name: 'Codeception - unit'
-        command: 'bin/robo test unit'
-    step__run__codeception_acceptance: &step__run__codeception_acceptance
-        name: 'Codeception - acceptance'
-        command: 'bin/robo test acceptance'
-    step__store_test_results: &step__store_test_results
-        path: 'tests/_output/machine/junit'
-    step__run__codecov: &step__run__codecov
-        name: 'Publish the code coverage report on Codecov.io'
-        when: 'always'
-        command: >
-            [ ! -s tests/_output/machine/coverage/*/coverage.xml ]
-            || bash <(curl -s https://codecov.io/bash)
-            || true
+    php703:
+        environment:
+            <<: *env_composer
 
-    job__lint_and_test: &job__lint_and_test
+        docker:
+            -
+                name: 'main'
+                image: 'circleci/php:7.3'
+
+    php702:
+        environment:
+            <<: *env_composer
+
+        docker:
+            -
+                name: 'main'
+                image: 'circleci/php:7.2'
+
+commands:
+    composer_install:
+        description: 'Install Composer dependencies with cache restore and save'
+        steps:
+            -
+                restore_cache:
+                    name: 'Composer - cache restore'
+                    keys:
+                        - 'composer-{{ checksum "./composer.lock" }}-1'
+
+            -
+                run:
+                    name: 'Composer - install'
+                    command: >
+                        [[ -d "$(composer config vendor-dir)" ]] || composer install --no-progress
+
+            -
+                save_cache:
+                    name: 'Composer - cache save'
+                    key: 'composer-{{ checksum "./composer.lock" }}-1'
+                    paths:
+                        - './bin/'
+                        - './vendor/'
+                        - '~/.composer/cache/'
+
+
+    lint:
+        description: 'Run linters'
+        steps:
+            -
+                run:
+                    name: 'Run linters'
+                    command: 'bin/robo lint'
+
+    test:
+        description: 'Run tests'
+        steps:
+            -
+                run:
+                    name: 'Codeception - unit'
+                    command: 'bin/robo test unit'
+            -
+                codecov/upload:
+                    flags: 'unit'
+                    file: './tests/_output/machine/coverage/unit/coverage.xml'
+            -
+                run:
+                    name: 'Codeception - acceptance'
+                    command: 'bin/robo test acceptance'
+            -
+                codecov/upload:
+                    flags: 'acceptance'
+                    file: './tests/_output/machine/coverage/acceptance/coverage.xml'
+            -
+                store_test_results:
+                    name: 'Store unit test results'
+                    path: './tests/_output/machine/junit'
+
+jobs:
+    build:
+        executor: 'php702'
         working_directory: '~/repo'
         steps:
             - 'checkout'
-            -
-                run:
-                    <<: *step__run__install_php_extensions
-            -
-                run:
-                    <<: *step__run__install_composer
-            -
-                restore_cache:
-                    <<: *step__restore_cache
-            -
-                run:
-                    <<: *step__run__composer_install
-            -
-                save_cache:
-                    <<: *step__save_cache
-            -
-                run:
-                    <<: *step__run__linters
-            -
-                run:
-                    <<: *step__run__codeception_unit
-            -
-                run:
-                    <<: *step__run__codeception_acceptance
-            -
-                store_test_results:
-                    <<: *step__store_test_results
-            -
-                run:
-                    <<: *step__run__codecov
-
-jobs:
-    php701__lint_and_test:
-        <<: *job__lint_and_test
-        docker:
-            -
-                image: 'circleci/php:7.1'
-    php702__lint_and_test:
-        <<: *job__lint_and_test
-        docker:
-            -
-                image: 'circleci/php:7.2'
+            - 'composer_install'
+    lint:
+        executor: 'php702'
+        working_directory: '~/repo'
+        steps:
+            - 'checkout'
+            - 'composer_install'
+            - 'lint'
+    test_php704:
+        executor: 'php704'
+        working_directory: '~/repo'
+        steps:
+            - 'checkout'
+            - 'composer_install'
+            - 'test'
+    test_php703:
+        executor: 'php703'
+        working_directory: '~/repo'
+        steps:
+            - 'checkout'
+            - 'composer_install'
+            - 'test'
+    test_php702:
+        executor: 'php702'
+        working_directory: '~/repo'
+        steps:
+            - 'checkout'
+            - 'composer_install'
+            - 'test'
 
 workflows:
-    version: 2
-    php701__lint_and_test:
+    lint_and_test:
         jobs:
-            - 'php701__lint_and_test'
-    php702__lint_and_test:
-        jobs:
-            - 'php702__lint_and_test'
+            -
+                build: {}
+            -
+                lint:
+                    requires:
+                        - build
+            -
+                test_php704:
+                    requires:
+                        - build
+            -
+                test_php703:
+                    requires:
+                        - build
+            -
+                test_php702:
+                    requires:
+                        - build

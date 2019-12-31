@@ -3,11 +3,17 @@
 namespace Sweetchuck\Robo\cdd\Tests\Unit\Task;
 
 use Codeception\Test\Unit;
+use League\Container\Container as LeagueContainer;
 use League\Container\ContainerInterface;
+use Robo\Collection\CollectionBuilder;
+use Robo\Config\Config;
 use Robo\Robo;
 use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyOutput;
-use Sweetchuck\Robo\cdd\Task\CircularDependencyDetectorTask;
+use Sweetchuck\Robo\cdd\Test\Helper\Dummy\DummyProcessHelper;
+use Sweetchuck\Robo\cdd\Test\Helper\Dummy\DummyTaskBuilder;
+use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\ErrorHandler\BufferingLogger;
 
 class CircularDependencyDetectorTaskTest extends Unit
 {
@@ -17,46 +23,55 @@ class CircularDependencyDetectorTaskTest extends Unit
     protected $tester;
 
     /**
-     * @var \Sweetchuck\Robo\cdd\Task\CircularDependencyDetectorTask|\Robo\Collection\CollectionBuilder
+     * @var \League\Container\ContainerInterface
      */
-    protected $task;
+    protected $container;
 
     /**
-     * @var null|\League\Container\ContainerInterface
+     * @var \Robo\Config
      */
-    protected $containerBackup;
+    protected $config;
 
     /**
-     * {@inheritdoc}
+     * @var \Robo\Collection\CollectionBuilder
      */
-    // @codingStandardsIgnoreLine
+    protected $builder;
+
+    /**
+     * @var \Sweetchuck\Robo\cdd\Test\Helper\Dummy\DummyTaskBuilder
+     */
+    protected $taskBuilder;
+
+    /**
+     * @SuppressWarnings("CamelCaseMethodName")
+     */
+    //phpcs:ignore PSR2.Methods.MethodDeclaration.Underscore
     public function _before()
     {
         parent::_before();
 
-        $this->containerBackup = Robo::hasContainer() ? Robo::getContainer() : null;
-        if ($this->containerBackup) {
-            Robo::unsetContainer();
-        }
+        Robo::unsetContainer();
+
+        $this->container = new LeagueContainer();
+        $application = new SymfonyApplication('Sweetchuck - Robo Git', '1.0.0');
+        $application->getHelperSet()->set(new DummyProcessHelper(), 'process');
+        $this->config = (new Config());
+        $input = null;
+        $output = new DummyOutput([
+            'verbosity' => DummyOutput::VERBOSITY_DEBUG,
+        ]);
+
+        $this->container->add('container', $this->container);
+
+        Robo::configureContainer($this->container, $application, $this->config, $input, $output);
+        $this->container->share('logger', BufferingLogger::class);
+
+        $this->builder = CollectionBuilder::create($this->container, null);
+        $this->taskBuilder = new DummyTaskBuilder();
+        $this->taskBuilder->setContainer($this->container);
+        $this->taskBuilder->setBuilder($this->builder);
     }
-
-    /**
-     * {@inheritdoc}
-     *
-     */
-    // @codingStandardsIgnoreLine
-    protected function _after()
-    {
-        if ($this->containerBackup) {
-            Robo::setContainer($this->containerBackup);
-        } else {
-            Robo::unsetContainer();
-        }
-
-        $this->containerBackup = null;
-
-        parent::_after();
-    }
+    // phpcs:enable PSR2.Methods.MethodDeclaration.Underscore
 
     public function casesRun(): array
     {
@@ -126,10 +141,9 @@ class CircularDependencyDetectorTaskTest extends Unit
      */
     public function testRun(array $expected, array $options)
     {
-        $this->getNewContainer();
-        $task = new CircularDependencyDetectorTask();
-        $task->setOptions($options);
-
+        $taskBuilder = new DummyTaskBuilder();
+        $taskBuilder->setContainer($this->getNewContainer());
+        $task = $taskBuilder->taskCircularDependencyDetector($options);
         $result = $task->run();
 
         $this->tester->assertEquals($expected['exitCode'], $result->getExitCode());
