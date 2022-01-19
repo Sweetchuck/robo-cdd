@@ -3,6 +3,9 @@
     "description": "Robo task wrapper for the Circular Dependency Detector",
     "license": "GPL-3.0-or-later",
     "config": {
+        "allow-plugins": {
+            "sweetchuck/git-hooks": true
+        },
         "bin-dir": "bin",
         "optimize-autoloader": true,
         "preferred-install": "dist",
