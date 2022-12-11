@@ -14,10 +14,10 @@ use Sweetchuck\Robo\Phpcs\PhpcsTaskLoader;
 use Sweetchuck\Robo\PhpMessDetector\PhpmdTaskLoader;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
-use Webmozart\PathUtil\Path;
 
 class RoboFile extends Tasks
 {
@@ -80,7 +80,9 @@ class RoboFile extends Tasks
             }
 
             if ($container instanceof LeagueContainer) {
-                $container->share($name, $class);
+                $container
+                    ->add($name, $class)
+                    ->setShared(false);
             }
         }
     }
@@ -88,7 +90,7 @@ class RoboFile extends Tasks
     /**
      * Git "pre-commit" hook callback.
      *
-     * @command githook-pre-commit
+     * @command githook:pre-commit
      *
      * @initLintReporters
      */
