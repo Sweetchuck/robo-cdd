@@ -32,8 +32,8 @@
         "sweetchuck/robo-phpcs": "2.x-dev",
         "sweetchuck/robo-phpmd": "2.x-dev",
         "symfony/error-handler": "^5.2",
-        "symfony/finder": "^5.2",
-        "webmozart/path-util": "^2.3"
+        "symfony/filesystem": "^5.4 || ^6.0",
+        "symfony/finder": "^5.2 || ^6.0"
     },
     "autoload": {
         "psr-4": {
