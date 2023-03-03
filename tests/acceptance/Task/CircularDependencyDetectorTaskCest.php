@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Sweetchuck\Robo\cdd\Tests\Acceptance\Task;
 
 use Codeception\Example;
@@ -43,7 +45,7 @@ class CircularDependencyDetectorTaskCest
     /**
      * @dataProvider detectCases
      */
-    public function detect(AcceptanceTester $tester, Example $example)
+    public function detect(AcceptanceTester $tester, Example $example): void
     {
         $tester->runRoboTask($example['id'], CircularDependencyRoboFile::class, ...$example['cli']);
         $exitCode = $tester->getRoboTaskExitCode($example['id']);

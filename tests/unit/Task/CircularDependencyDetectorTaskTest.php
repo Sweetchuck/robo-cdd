@@ -125,19 +125,19 @@ class CircularDependencyDetectorTaskTest extends Unit
     /**
      * @dataProvider casesRun
      */
-    public function testRun(array $expected, array $options)
+    public function testRun(array $expected, array $options): void
     {
         $taskBuilder = new DummyTaskBuilder();
         $taskBuilder->setContainer($this->getNewContainer());
         $task = $taskBuilder->taskCircularDependencyDetector($options);
         $result = $task->run();
 
-        $this->tester->assertEquals($expected['exitCode'], $result->getExitCode());
-        $this->tester->assertEquals($expected['exitMessage'], $result->getMessage());
+        $this->tester->assertSame($expected['exitCode'], $result->getExitCode());
+        $this->tester->assertSame($expected['exitMessage'], $result->getMessage());
         if (!empty($expected['assets'])) {
             foreach ($expected['assets'] as $assetName => $asset) {
                 $this->tester->assertTrue(isset($result[$assetName]));
-                $this->tester->assertEquals($asset, $result[$assetName]);
+                $this->tester->assertSame($asset, $result[$assetName]);
             }
         }
     }

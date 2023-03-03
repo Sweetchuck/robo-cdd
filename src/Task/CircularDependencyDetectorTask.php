@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Sweetchuck\Robo\cdd\Task;
 
 use Robo\Result;
@@ -10,113 +12,74 @@ use Sweetchuck\cdd\CircularDependencyDetector;
 class CircularDependencyDetectorTask extends RoboBaseTask
 {
 
-    /**
-     * {@inheritdoc}
-     */
     public function __construct(array $options = [])
     {
         $this->setOptions($options);
     }
 
-    /**
-     * @var string
-     */
-    protected $taskName = 'Circular Dependency Detector';
+    protected string $taskName = 'Circular Dependency Detector';
 
-    /**
-     * @var string
-     */
-    protected $detectorClass = CircularDependencyDetector::class;
+    protected string $detectorClass = CircularDependencyDetector::class;
 
-    /**
-     * @var array
-     */
-    protected $assets = [];
+    protected array $assets = [];
 
-    /**
-     * @var string
-     */
-    protected $assetNamePrefix = '';
+    protected string $assetNamePrefix = '';
 
     public function getAssetNamePrefix(): string
     {
         return $this->assetNamePrefix;
     }
 
-    /**
-     * @return $this
-     */
-    public function setAssetNamePrefix(string $value)
+    public function setAssetNamePrefix(string $value): static
     {
         $this->assetNamePrefix = $value;
 
         return $this;
     }
 
-    /**
-     * @var array
-     */
-    protected $items = [];
+    protected array $items = [];
 
     public function getItems(): array
     {
         return $this->items;
     }
 
-    /**
-     * @return $this
-     */
-    public function setItems(array $value)
+    public function setItems(array $value): static
     {
         $this->items = $value;
 
         return $this;
     }
 
-    /**
-     * @var string
-     */
-    protected $itemLabel = 'Unknown';
+    protected string $itemLabel = 'Unknown';
 
     public function getItemLabel(): string
     {
         return $this->itemLabel;
     }
 
-    /**
-     * @return $this
-     */
-    public function setItemLabel(string $value)
+    public function setItemLabel(string $value): static
     {
         $this->itemLabel = $value;
 
         return $this;
     }
 
-    /**
-     * @var bool
-     */
-    protected $haltOnError = true;
+    protected bool $haltOnError = true;
 
     public function getHaltOnError(): bool
     {
         return $this->haltOnError;
     }
 
-    /**
-     * @return $this
-     */
-    public function setHaltOnError(bool $value)
+    public function setHaltOnError(bool $value): static
     {
         $this->haltOnError = $value;
 
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    public function setOptions(array $options)
+    public function setOptions(array $options): static
     {
         if (array_key_exists('assetNamePrefix', $options)) {
             $this->setAssetNamePrefix($options['assetNamePrefix']);
@@ -148,10 +111,7 @@ class CircularDependencyDetectorTask extends RoboBaseTask
             ->runReturn();
     }
 
-    /**
-     * @return $this
-     */
-    protected function runHeader()
+    protected function runHeader(): static
     {
         $this->printTaskInfo(
             'Detect dependencies among {itemCount} of {itemLabel} items',
@@ -164,10 +124,7 @@ class CircularDependencyDetectorTask extends RoboBaseTask
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    protected function runDoIt()
+    protected function runDoIt(): static
     {
         /** @var \Sweetchuck\cdd\CircularDependencyDetectorInterface $detector */
         $detector = new $this->detectorClass();
