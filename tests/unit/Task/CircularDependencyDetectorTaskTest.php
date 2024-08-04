@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Sweetchuck\Robo\cdd\Tests\Unit\Task;
 
+use Codeception\Attribute\DataProvider;
 use Codeception\Test\Unit;
 use League\Container\Container as LeagueContainer;
 use Psr\Container\ContainerInterface;
@@ -12,8 +13,8 @@ use Robo\Config\Config as RoboConfig;
 use Robo\Robo;
 use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyOutput;
 use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyProcessHelper;
-use Sweetchuck\Robo\cdd\Test\Helper\Dummy\DummyTaskBuilder;
-use Sweetchuck\Robo\cdd\Test\UnitTester;
+use Sweetchuck\Robo\cdd\Tests\Helper\Dummy\DummyTaskBuilder;
+use Sweetchuck\Robo\cdd\Tests\UnitTester;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\ErrorHandler\BufferingLogger;
@@ -59,7 +60,7 @@ class CircularDependencyDetectorTaskTest extends Unit
         $this->taskBuilder->setBuilder($this->builder);
     }
 
-    public function casesRun(): array
+    public static function casesRun(): array
     {
         return [
             'success' => [
@@ -122,9 +123,7 @@ class CircularDependencyDetectorTaskTest extends Unit
         ];
     }
 
-    /**
-     * @dataProvider casesRun
-     */
+    #[DataProvider('casesRun')]
     public function testRun(array $expected, array $options): void
     {
         $taskBuilder = new DummyTaskBuilder();

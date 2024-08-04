@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace Sweetchuck\Robo\cdd\Test\Helper\RoboFiles;
+namespace Sweetchuck\Robo\cdd\Tests\Helper\RoboFiles;
 
 use Robo\Tasks;
 use Sweetchuck\Robo\cdd\CircularDependencyTaskLoader;

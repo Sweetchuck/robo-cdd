@@ -1,5 +1,5 @@
 
-namespace: 'Sweetchuck\Robo\cdd\Test'
+namespace: 'Sweetchuck\Robo\cdd\Tests'
 
 actor: 'Tester'
 
@@ -7,8 +7,7 @@ paths:
     tests: 'tests'
     data: 'tests/_data'
     envs: 'tests/_envs'
-    log: 'tests/_log'
-    output: 'tests/_log'
+    output: 'tests/_output'
     support: 'tests/_support'
 
 bootstrap: '_bootstrap.php'

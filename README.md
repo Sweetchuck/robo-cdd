@@ -1,7 +1,7 @@
 # Robo - Circular Dependency Detector
 
-[![CircleCI](https://circleci.com/gh/Sweetchuck/robo-cdd/tree/3.x.svg?style=svg)](https://circleci.com/gh/Sweetchuck/robo-cdd/?branch=3.x)
-[![codecov](https://codecov.io/gh/Sweetchuck/robo-cdd/branch/3.x/graph/badge.svg?token=Y6GIX9ovAG)](https://app.codecov.io/gh/Sweetchuck/robo-cdd/branch/3.x)
+[![CircleCI](https://circleci.com/gh/Sweetchuck/robo-cdd/tree/4.x.svg?style=svg)](https://circleci.com/gh/Sweetchuck/robo-cdd/?branch=4.x)
+[![codecov](https://codecov.io/gh/Sweetchuck/robo-cdd/branch/4.x/graph/badge.svg?token=Y6GIX9ovAG)](https://app.codecov.io/gh/Sweetchuck/robo-cdd/branch/4.x)
 
 
 @todo

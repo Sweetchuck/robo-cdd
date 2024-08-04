@@ -1,6 +1,6 @@
 <?php
 
-namespace Sweetchuck\Robo\cdd\Test;
+namespace Sweetchuck\Robo\cdd\Tests;
 
 /**
  * Inherited Methods
