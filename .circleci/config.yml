@@ -2,7 +2,7 @@
 version: 2.1
 
 orbs:
-    codecov: 'codecov/codecov@3.0.0'
+    codecov: 'codecov/codecov@6'
 
 .env_common: &env_common
     SHELL: '/bin/bash'
@@ -95,7 +95,8 @@ commands:
             -
                 codecov/upload:
                     flags: 'unit'
-                    file: './tests/_output/machine/coverage/unit/coverage.xml'
+                    disable_search: true
+                    files: './tests/_output/machine/coverage/unit/coverage.xml'
             -
                 run:
                     name: 'Codeception - acceptance'
@@ -104,7 +105,8 @@ commands:
             -
                 codecov/upload:
                     flags: 'acceptance'
-                    file: './tests/_output/machine/coverage/acceptance/coverage.xml'
+                    disable_search: true
+                    files: './tests/_output/machine/coverage/acceptance/coverage.xml'
             -
                 store_test_results:
                     name: 'Store unit test results'
